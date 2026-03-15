@@ -1,8 +1,8 @@
 name: Fetch Reddit Data
 on:
   schedule:
-    - cron: '0 */6 * * *' # Runs every 6 hours
-  workflow_dispatch: # Allows manual trigger
+    - cron: '0 */6 * * *' 
+  workflow_dispatch: 
 
 jobs:
   fetch:
@@ -10,41 +10,52 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4 # Updated to v4 (Node 24)
       
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5 # Updated to v5 (Node 24)
         with:
           python-version: '3.x'
           
       - name: Install dependencies
         run: pip install requests
         
-      - name: Fetch Reddit JSON via Python
+      - name: Fetch Reddit JSON (Advanced Stealth)
         run: |
           python -c "
-          import requests, json, sys
-          url = 'https://www.reddit.com/r/AI_Agents.json?limit=25'
+          import requests, json, sys, time
+          url = 'https://www.reddit.com/r/AI_Agents.json?limit=25&raw_json=1'
           headers = {
-              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+              'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
               'Accept': 'application/json, text/plain, */*',
               'Accept-Language': 'en-US,en;q=0.9',
-              'Referer': 'https://www.reddit.com/',
-              'DNT': '1'
+              'Referer': 'https://www.google.com/',
+              'Sec-Fetch-Dest': 'empty',
+              'Sec-Fetch-Mode': 'cors',
+              'Sec-Fetch-Site': 'same-origin',
+              'Pragma': 'no-cache',
+              'Cache-Control': 'no-cache'
           }
-          try:
-              response = requests.get(url, headers=headers, timeout=15)
-              if response.status_code == 200:
-                  with open('reddit_data.json', 'w', encoding='utf-8') as f:
-                      json.dump(response.json(), f)
-                  print('✅ Successfully fetched Reddit data')
-              else:
-                  print(f'❌ Failed with status code: {response.status_code}')
-                  print(response.text[:500])
-                  sys.exit(1)
-          except Exception as e:
-              print(f'💥 Error: {str(e)}')
-              sys.exit(1)
+          
+          for attempt in range(3):
+              try:
+                  print(f'Attempt {attempt + 1}...')
+                  response = requests.get(url, headers=headers, timeout=20)
+                  if response.status_code == 200:
+                      data = response.json()
+                      if 'data' in data:
+                          with open('reddit_data.json', 'w', encoding='utf-8') as f:
+                              json.dump(data, f)
+                          print('✅ Successfully fetched Reddit data')
+                          sys.exit(0)
+                  print(f'⚠️ Failed with status {response.status_code}. Retrying...')
+                  time.sleep(5)
+              except Exception as e:
+                  print(f'💥 Error on attempt {attempt + 1}: {str(e)}')
+                  time.sleep(5)
+          
+          print('❌ All attempts failed.')
+          sys.exit(1)
           "
           
       - name: Commit and Push
@@ -52,5 +63,5 @@ jobs:
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
           git add reddit_data.json
-          git commit -m "Update Reddit data cache (stealth mode)" || exit 0
+          git commit -m "Update Reddit data cache (v2 stealth)" || exit 0
           git push
