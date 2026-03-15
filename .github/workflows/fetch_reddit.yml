@@ -9,53 +9,84 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # This removes the Node.js warning
     steps:
-      - uses: actions/checkout@v4 # Updated to v4 (Node 24)
+      - uses: actions/checkout@v4
       
       - name: Set up Python
-        uses: actions/setup-python@v5 # Updated to v5 (Node 24)
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
           
       - name: Install dependencies
         run: pip install requests
         
-      - name: Fetch Reddit JSON (Advanced Stealth)
+      - name: Fetch Reddit Data (Multi-Source Stealth)
         run: |
           python -c "
-          import requests, json, sys, time
-          url = 'https://www.reddit.com/r/AI_Agents.json?limit=25&raw_json=1'
-          headers = {
-              'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-              'Accept': 'application/json, text/plain, */*',
-              'Accept-Language': 'en-US,en;q=0.9',
-              'Referer': 'https://www.google.com/',
-              'Sec-Fetch-Dest': 'empty',
-              'Sec-Fetch-Mode': 'cors',
-              'Sec-Fetch-Site': 'same-origin',
-              'Pragma': 'no-cache',
-              'Cache-Control': 'no-cache'
-          }
+          import requests, json, sys, time, xml.etree.ElementTree as ET
           
-          for attempt in range(3):
+          def fetch_json(url):
+              headers = {
+                  'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1',
+                  'Accept': 'application/json',
+                  'Referer': 'https://www.google.com/'
+              }
               try:
-                  print(f'Attempt {attempt + 1}...')
-                  response = requests.get(url, headers=headers, timeout=20)
-                  if response.status_code == 200:
-                      data = response.json()
-                      if 'data' in data:
-                          with open('reddit_data.json', 'w', encoding='utf-8') as f:
-                              json.dump(data, f)
-                          print('✅ Successfully fetched Reddit data')
-                          sys.exit(0)
-                  print(f'⚠️ Failed with status {response.status_code}. Retrying...')
-                  time.sleep(5)
+                  resp = requests.get(url, headers=headers, timeout=15)
+                  if resp.status_code == 200:
+                      return resp.json()
+                  print(f'Attempt failed for {url}: {resp.status_code}')
               except Exception as e:
-                  print(f'💥 Error on attempt {attempt + 1}: {str(e)}')
-                  time.sleep(5)
+                  print(f'Error for {url}: {e}')
+              return None
+
+          def fetch_rss_as_json():
+              print('Trying RSS fallback...')
+              url = 'https://www.reddit.com/r/AI_Agents.rss'
+              headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+              try:
+                  resp = requests.get(url, headers=headers, timeout=15)
+                  if resp.status_code == 200:
+                      root = ET.fromstring(resp.text)
+                      ns = {'ns': 'http://www.w3.org/2005/Atom'}
+                      children = []
+                      for entry in root.findall('ns:entry', ns):
+                          title = entry.find('ns:title', ns).text
+                          link_elem = entry.find('ns:link', ns)
+                          link = link_elem.attrib['href'] if link_elem is not None else ''
+                          children.append({
+                              'data': {
+                                  'title': title,
+                                  'selftext': title,
+                                  'permalink': link.replace('https://www.reddit.com', ''),
+                                  'stickied': False
+                              }
+                          })
+                      return {'data': {'children': children}}
+              except Exception as e:
+                  print(f'RSS Error: {e}')
+              return None
+
+          # Step 1: Try Old Reddit (Often has less protection)
+          data = fetch_json('https://old.reddit.com/r/AI_Agents.json?limit=25')
           
-          print('❌ All attempts failed.')
-          sys.exit(1)
+          # Step 2: Try Standard Reddit JSON if Step 1 fails
+          if not data:
+              data = fetch_json('https://www.reddit.com/r/AI_Agents.json?limit=25')
+              
+          # Step 3: Try RSS Feed as ultimate fallback
+          if not data:
+              data = fetch_rss_as_json()
+
+          if data and len(data.get('data', {}).get('children', [])) > 0:
+              with open('reddit_data.json', 'w', encoding='utf-8') as f:
+                  json.dump(data, f)
+              print('✅ Successfully saved Reddit data')
+          else:
+              print('❌ All sources failed to return data.')
+              sys.exit(1)
           "
           
       - name: Commit and Push
@@ -63,5 +94,5 @@ jobs:
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
           git add reddit_data.json
-          git commit -m "Update Reddit data cache (v2 stealth)" || exit 0
+          git commit -m "Update Reddit data cache (v3 stealth multi-source)" || exit 0
           git push
