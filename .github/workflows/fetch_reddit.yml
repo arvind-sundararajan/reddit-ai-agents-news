@@ -1,0 +1,23 @@
+name: Fetch Reddit Data
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - name: Fetch Reddit JSON
+        run: |
+          curl -H "User-Agent: Mozilla/5.0" "https://www.reddit.com/r/AI_Agents.json?limit=25&raw_json=1" > reddit_data.json
+      - name: Commit and Push
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add reddit_data.json
+          git commit -m "Update Reddit data cache" || exit 0
+          git push
