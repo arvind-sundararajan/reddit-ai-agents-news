@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Agentic Edge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2family=Syne:wght@700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100vw; height: 100vh; background: #fff; color: #111; font-family: 'Space Grotesk', system-ui, sans-serif; overflow: hidden; }
+
+    .frame { width: 100vw; height: 95vh; display: flex; flex-direction: column; }
+
+    /* masthead */
+    .masthead { background: #fff; border-bottom: 3px solid #111; padding: 1.2vh 2.5vw 1vh; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .masthead__left { display: flex; flex-direction: column; gap: 0.4vh; }
+    .masthead__title { font-family: 'Syne', sans-serif; font-size: clamp(26px, 4.2vw, 60px); font-weight: 800; line-height: 1; color: #111; letter-spacing: -1px; }
+    .masthead__title em { font-style: normal; border-bottom: 4px solid #111; }
+    .masthead__tagline { font-size: clamp(11px, 1.15vw, 17px); font-weight: 600; color: #111; letter-spacing: 1px; text-transform: uppercase; }
+    .masthead__right { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 0.3vh; }
+    .masthead__right span { font-size: clamp(8px, 0.85vw, 13px); font-weight: 600; color: #111; letter-spacing: 2px; text-transform: uppercase; }
+    .masthead__right .issue { font-family: 'Syne', sans-serif; font-size: clamp(10px, 1vw, 15px); font-weight: 800; }
+
+    /* content */
+    .content-wrap { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+    table.layout { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; }
+    tr.row--main   { height: 78%; }
+    tr.row--bottom { height: 22%; }
+    col.col-lead { width: 62%; }
+    col.col-side { width: 38%; }
+
+    .cell { vertical-align: top; padding: 1vh 1.5vw; border: 1px solid #bbb; overflow: hidden; background: #fff; }
+    .cell--lead   { border-left: none; border-top: none; }
+    .cell--side   { border-top: none; border-right: none; }
+    .cell--bottom { border-bottom: none; border-left: none; }
+    .cell--bottom:last-child { border-right: none; }
+
+    /* side nested table */
+    table.side-table { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; }
+    table.side-table td { vertical-align: top; padding: 0.8vh 1vw; border-bottom: 1px solid #bbb; overflow: hidden; background: #fff; }
+    table.side-table td:last-child { border-bottom: none; }
+
+    /* typography */
+    .label { font-size: clamp(6px, 0.62vw, 9px); font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #999; margin-bottom: 0.3vh; }
+    .headline { font-family: 'Syne', sans-serif; font-weight: 700; line-height: 1.2; color: #111; }
+    .headline a { color: #111; text-decoration: none; }
+    .headline a:hover { text-decoration: underline; }
+    .headline--lead   { font-size: clamp(14px, 2vw, 30px); }
+    .headline--side   { font-size: clamp(11px, 1.3vw, 19px); }
+    .headline--bottom { font-size: clamp(10px, 1.1vw, 16px); }
+    .rule { height: 1px; background: #ddd; margin: 0.5vh 0; }
+    .body-text     { font-size: clamp(9px, 0.95vw, 14px); line-height: 1.5; color: #333; }
+    .body-text--sm { font-size: clamp(8px, 0.85vw, 12px); color: #444; }
+    .body-text--xs { font-size: clamp(7px, 0.75vw, 11px); color: #555; margin-top: 0.3vh; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <header class="masthead">
+      <div class="masthead__left">
+        <div class="masthead__title">The <em>Agentic</em> Edge</div>
+        <div class="masthead__tagline">Real Challenges Enterprises Face with LLM &amp; Agentic AI</div>
+      </div>
+      <div class="masthead__right">
+        <span class="issue">Weekly ? Issue 33</span>
+        <span>March 22, 2026</span>
+        <span>Arvind Sundararajan</span>
+      </div>
+    </header>
+    <div class="content-wrap">
+      <table class="layout">
+        <colgroup><col class="col-lead"><col class="col-side"></colgroup>
+        <tbody>
+          <tr class="row--main">
+            <td class="cell cell--lead">
+              <div class="label">Lead Story</div>
+              <div class="headline headline--lead">
+                <a href="https://www.reddit.com/r/AI_Agents/comments/1rzpxtc/moving_away_from_cool_to_practicality_of_ai_agents/" target="_blank">Moving away from "cool" to practicality of AI agents.</a>
+              </div>
+              <div class="rule"></div>
+              
+            </td>
+            <td style="padding:0; border-top:none; border-right:none; overflow:hidden;">
+              <table class="side-table"><tbody>
+    <tr><td>
+      <div class="label">INSIGHT</div>
+      <div class="headline headline--side">
+        <a href="https://www.reddit.com/r/AI_Agents/comments/1rzq1ye/what_actually_makes_an_ai_agent_useful_longterm/" target="_blank">What actually makes an AI agent useful long-term My notes after running one continuously for a month</a>
+      </div>
+      <div class="rule"></div>
+      
+    </td></tr>
+    <tr><td>
+      <div class="label">INSIGHT</div>
+      <div class="headline headline--side">
+        <a href="https://www.reddit.com/r/AI_Agents/comments/1rzpu77/ai_agents_that_work_with_databases_instead_of/" target="_blank">ai agents that work with databases instead of apis - underrated pattern</a>
+      </div>
+      <div class="rule"></div>
+      
+    </td></tr>
+    <tr><td>
+      <div class="label">INSIGHT</div>
+      <div class="headline headline--side">
+        <a href="https://www.reddit.com/r/AI_Agents/comments/1rzr7lw/advice_on_setting_up_an_ai_coding_workflow/" target="_blank">Advice on setting up an AI coding workflow</a>
+      </div>
+      <div class="rule"></div>
+      
+    </td></tr></tbody></table>
+            </td>
+          </tr>
+          <tr class="row--bottom">
+            
+    <td class="cell cell--bottom" style="border-left:none;">
+      <div class="headline headline--bottom">
+        <a href="https://www.reddit.com/r/AI_Agents/comments/1rzyfv0/middleware_layer_for_ai_outputs_stateful/" target="_blank">Middleware layer for AI outputs: stateful selection instead of raw generation</a>
+      </div>
+      
+    </td>
+    <td class="cell cell--bottom" style="border-right:none;">
+      <div class="headline headline--bottom">
+        <a href="https://www.reddit.com/r/AI_Agents/comments/1rzvzwl/using_two_toptier_llms_for_coding_fixed_roles/" target="_blank">Using two top-tier LLMs for coding: fixed roles, peer convergence, and when the reviewer should patch directly</a>
+      </div>
+      
+    </td>
+            <td style="border:none; background:#fff;"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>
